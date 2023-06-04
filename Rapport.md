@@ -131,8 +131,77 @@ LOGNAME=seed
 XDG_SESS......
 ````
 
+**conclusion :** the result is the same as running the command normally 
+# Task 4 
+i create file called **task4_system_func.c** to run 
+
+### task4_system_func.c
+````c
+#include <stdio.h>
+#include <stdlib.h>
+int main()
+{
+system("/usr/bin/env");`
+return 0 ;
+}
+````
+
+after I compile and run this program 
+
+````bash
+[06/04/23]seed@VM:~/.../Labsetup$ gcc task4_system_func.c 
+[06/04/23]seed@VM:~/.../Labsetup$ ./a.out 
+GJS_DEBUG_TOPICS=JS ERROR;JS LOG
+LESSOPEN=| /usr/bin/lesspipe %s
+USER=seed
+SSH_AGENT_PID=2275
+XDG_SESSION_TYPE=x11
+SHLVL=1
+HOME=/home/seed
+OLDPWD=/home/seed/Desktop/Env_var
+DESKTOP_SESSION=ubuntu
+GNOME_SHELL_SESSION_MODE=ubuntu
+GTK_MODULES=gail:atk-bridge
+MANAGERPID=2059
+DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+COLORTERM=truecolor
+IM_CONFIG_PHASE=1
+LOGNAME=seed
+JOURNAL_STREAM=9:36475
+_=./a.out
+XDG_SESS
+````
+**conclution :** the result is the same
 
 
+# Task 5
+I create file called **print_all_env.c** 
 
+````c
+#include <stdio.h>
+#include <stdlib.h>
+extern char**environ;
+int main(){
+int i = 0;
+while (environ[i] != NULL) {
+printf("%s\n", environ[i]);i++;
+}
+}
+````
+After when i run the program normally it show  
 
+````bash
+[06/04/23]seed@VM:~/.../Labsetup$ gcc print_all_env.c 
+[06/04/23]seed@VM:~/.../Labsetup$ ./a.out 
+SHELL=/bin/bash
+SESSION_MANAGER=local/VM:@/tmp/.ICE-unix/2326,unix/VM:/tmp/.ICE-unix/2326
+QT_ACCESSIBILITY=1
+COLORTERM=truecolor
+XDG_CONFIG_DIRS=/etc/xdg/xdg-ubuntu:/etc/xdg
+XDG_MENU_PREFIX=gnome-
+GNOME_DESKTOP_SESSION_ID=this-is-deprecated
+GNOME_SHELL_SESSION_MODE=ubuntu
+SSH_AUTH_SOCK=/run/user/1000/keyring/ssh
+XMODIFI....
+````
 
